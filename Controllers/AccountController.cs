@@ -26,6 +26,13 @@ namespace AspIdentity.Controllers
             return View();
         }
 
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -34,14 +41,19 @@ namespace AspIdentity.Controllers
             if (ModelState.IsValid)
             {
                 await signInManager.SignOutAsync();
-                var singInTask = await signInManager.PasswordSignInAsync(details.Username, details.Password,false, false);
+                var singInTask = await signInManager.PasswordSignInAsync(details.Username, details.Password, false, false);
                 if (singInTask.Succeeded)
                     return Redirect(returnUrl ?? "/");
-                
+
                 ModelState.AddModelError("", "Incorrect Username or Password");
             }
 
             return View(details);
+        }
+
+        [AllowAnonymous] 
+        public IActionResult AccessDenied() {
+             return View();
         }
     }
 }

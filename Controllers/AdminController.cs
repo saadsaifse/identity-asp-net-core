@@ -3,12 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using AspIdentity.Models;
 using AspIdentity.Models.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AspIdentity.Controllers
 {
+    [Authorize(Roles ="Admins")]
     public class AdminController : Controller
     {
         readonly UserManager<AppUser> userManager;
