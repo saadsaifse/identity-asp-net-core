@@ -4,7 +4,7 @@ using AspIdentity.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace AspIdentity.Views.Infrastructure
+namespace AspIdentity.Infrastructure
 {
     [HtmlTargetElement("td", Attributes = "identity-role")]
     public class RoleMembersTagHelper : TagHelper
