@@ -25,10 +25,17 @@ namespace AspIdentity.Controllers
             return View(data);
         }
 
-        [Authorize(Roles = "Users")]
+        //[Authorize(Roles = "Users")]
+        [Authorize(Policy = "DCStatePolicy")]
         public IActionResult OtherAction()
         {
             return View("Index", GetData(nameof(OtherAction)));
+        }
+
+        [Authorize(Policy = "BlockSaad")]
+        public IActionResult BlockSaadAction()
+        {
+            return View("Index", GetData(nameof(BlockSaadAction)));
         }
 
         private Dictionary<string, object> GetData(string actionName)

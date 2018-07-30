@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AspIdentity.Infrastructure;
+using AspIdentity.Models;
 using AspIdentity.Models.Identity;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -26,14 +29,33 @@ namespace AspIdentity
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IClaimsTransformation, LocationClaimsProvider>();
+            services.AddTransient<IAuthorizationHandler, BlockUserHandler>();
+            services.AddTransient<IAuthorizationHandler, ProtectCaseHandler>();
 
-            services.AddDbContext<AppIdentityDbContext>(options => 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("DCStatePolicy", policy => policy
+                            .RequireRole("Admins")
+                            .RequireClaim(ClaimTypes.StateOrProvince, "DC"));
+                
+                options.AddPolicy("BlockSaad", policy => policy
+                            .RequireAuthenticatedUser()
+                            .AddRequirements(new BlockUserRequirement("Saad")));
+
+                options.AddPolicy("TrimCases", policy=>policy
+                            .RequireAuthenticatedUser()
+                            .AddRequirements(new ProtectCasesRequirement(false)));
+            });
+
+            services.AddDbContext<AppIdentityDbContext>(options =>
                     options.UseSqlServer(configuration["Data:Identity:ConnectionString"]));
-            
-            services.AddIdentity<AppUser, IdentityRole>(options =>{
+
+            services.AddIdentity<AppUser, IdentityRole>(options =>
+            {
                 options.User.RequireUniqueEmail = true;
                 options.Password.RequireDigit = true;
-                options.Password.RequiredLength = 8; })
+                options.Password.RequiredLength = 8;
+            })
                 .AddEntityFrameworkStores<AppIdentityDbContext>()
                 .AddDefaultTokenProviders();
 
