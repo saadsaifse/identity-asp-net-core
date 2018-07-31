@@ -47,6 +47,12 @@ namespace AspIdentity
                             .AddRequirements(new ProtectCasesRequirement(false)));
             });
 
+            services.AddAuthentication().AddGoogle(opts => 
+            {
+                opts.ClientId = "yourClientId.apps.googleusercontent.com";        
+                opts.ClientSecret = "yourSecret";
+            });
+
             services.AddDbContext<AppIdentityDbContext>(options =>
                     options.UseSqlServer(configuration["Data:Identity:ConnectionString"]));
 
